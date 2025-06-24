@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rasid Bağırov - Məhəllə Saytı</title>
+  <style>
+    :root {
+      --primary: #00eaff;
+      --bg-start: #0f0c29;
+      --bg-end: #302b63;
+      --bg-mid: #24243e;
+      --card-bg: rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(-45deg, var(--bg-start), var(--bg-mid), var(--bg-end), #000);
+      background-size: 400% 400%;
+      animation: neonMove 15s ease infinite;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    @keyframes neonMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      text-align: center;
+      padding: 60px 20px 30px;
+    }
+
+    header h1 {
+      font-size: 2.8rem;
+      color: var(--primary);
+      text-shadow: 0 0 15px var(--primary);
+    }
+
+    header p {
+      color: #ccc;
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+
+    nav a {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 12px 20px;
+      border-radius: 25px;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: 0.3s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 10px transparent;
+    }
+
+    nav a:hover {
+      background: var(--primary);
+      color: #000;
+      box-shadow: 0 0 20px var(--primary);
+      transform: translateY(-3px);
+    }
+
+    main {
+      max-width: 900px;
+      margin: auto;
+      padding: 0 20px 60px;
+    }
+
+    section {
+      margin-bottom: 60px;
+      animation: fadeInUp 1s ease;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--primary);
+      display: inline-block;
+      padding-bottom: 5px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      transition: 0.3s ease;
+    }
+
+    .card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-4px);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #ccc;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: #aaa;
+      font-size: 0.9rem;
+      border-top: 1px solid #444;
+      backdrop-filter: blur(5px);
+    }
+
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(40px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 2rem;
+      }
+      nav {
+        flex-direction: column;
+        align-items: center;
+      }
+      nav a {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Rasid Bağırov</h1>
+    <p>Məhəllə üçün rəsmi xəbər və elan platforması</p>
+  </header>
+
+  <nav>
+    <a href="#xeberler"> Məhəllə Xəbərləri</a>
+    <a href="#elanlar"> Elanlar</a>
+    <a href="#elaqe"> Əlaqə</a>
+  </nav>
+
+  <main>
+    <section id="xeberler">
+      <h2>Məhəllə Xəbərləri</h2>
+      <div class="card">
+        <h3></h3>
+        <p></p>
+      </div>
+      <div class="card">
+        <h3>Toplantı Çağırışı</h3>
+        <p></p>
+      </div>
+    </section>
+
+    <section id="elanlar">
+      <h2>Elanlar</h2>
+      <div class="card">
+        <h3Xəbər yoxdur</h3>
+        <p></p>
+      </div>
+      <div class="card">
+        <h3>Xəbər Yoxdur</h3>
+        <p></p>
+      </div>
+    </section>
+
+    <section id="elaqe">
+      <h2>Əlaqə</h2>
+      <p>Bizə yazmaq üçün: <a href="mailto:mehhelle@example.com">mehhelle@example.com</a></p>
+    </section>
+  </main>
+
+  <footer>
+    © 2025 Rasid Bağırov Məhəlləsi. Hazırlayan: Polad
+  </footer>
+
+</body>
+</html>
