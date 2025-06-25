@@ -121,13 +121,15 @@
       color: #ccc;
     }
 
-    input {
+    input, textarea {
       padding: 10px;
       width: 100%;
       margin: 8px 0;
       border-radius: 10px;
       border: none;
       outline: none;
+      resize: none;
+      font-size: 1rem;
     }
 
     button {
@@ -142,6 +144,17 @@
 
     button:hover {
       background: #00c3d9;
+    }
+
+    #chat-box {
+      max-height: 300px;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.05);
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: #ddd;
     }
 
     footer {
@@ -233,7 +246,7 @@
 
     <section id="chat">
       <h2>Canlı Chat</h2>
-      <div class="card" style="max-height: 300px; overflow-y: auto;" id="chat-box">
+      <div class="card" id="chat-box">
         <!-- Mesajlar burda görünəcək -->
       </div>
       <div class="card">
@@ -252,23 +265,24 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <script>
+    // BURAYA Firebase layihənizin config məlumatlarını yerləşdirin:
     const firebaseConfig = {
-      apiKey: "AIzaSyDtKlqiWYadhhjD5CkfAsjLvisEaGmmGzo",
-      authDomain: "mehelle.firebaseapp.com",
-      databaseURL: "https://mehelle-default-rtdb.firebaseio.com",
-      projectId: "mehelle",
-      storageBucket: "mehelle.firebasestorage.app",
-      messagingSenderId: "147738380448",
-      appId: "1:147738380448:web:5ff65c69fc4ba3f9a4e1c5"
+      apiKey: "SENIN_API_KEY",
+      authDomain: "SENIN_AUTH_DOMAIN",
+      databaseURL: "SENIN_DATABASE_URL",
+      projectId: "SENIN_PROJECT_ID",
+      storageBucket: "SENIN_STORAGE_BUCKET",
+      messagingSenderId: "SENIN_MESSAGING_SENDER_ID",
+      appId: "SENIN_APP_ID"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     function sendMessage() {
-      const msg = document.getElementById("chat-message").value;
+      const msg = document.getElementById("chat-message").value.trim();
       const username = localStorage.getItem('currentUser') || "Qonaq";
-      if (msg.trim() === "") return;
+      if (msg === "") return;
       db.ref("messages").push({
         user: username,
         text: msg,
@@ -277,21 +291,23 @@
       document.getElementById("chat-message").value = "";
     }
 
-    db.ref("messages").on("value", function(snapshot) {
+    // Mesajları dinləyək və ekrana əlavə edək:
+    db.ref("messages").on("value", snapshot => {
       const chatBox = document.getElementById("chat-box");
       chatBox.innerHTML = "";
-      snapshot.forEach(function(child) {
+      snapshot.forEach(child => {
         const data = child.val();
         const p = document.createElement("p");
-        p.innerHTML = `<strong>${data.user}:</strong> ${data.text}`;
+        const time = new Date(data.time).toLocaleTimeString();
+        p.innerHTML = `<strong>${data.user}</strong> [${time}]: ${data.text}`;
         chatBox.appendChild(p);
       });
       chatBox.scrollTop = chatBox.scrollHeight;
     });
 
     function register() {
-      const username = document.getElementById('reg-username').value;
-      const password = document.getElementById('reg-password').value;
+      const username = document.getElementById('reg-username').value.trim();
+      const password = document.getElementById('reg-password').value.trim();
       if (!username || !password) {
         alert("Zəhmət olmasa bütün sahələri doldurun.");
         return;
@@ -301,8 +317,8 @@
     }
 
     function login() {
-      const username = document.getElementById('login-username').value;
-      const password = document.getElementById('login-password').value;
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value.trim();
       const user = JSON.parse(localStorage.getItem('user'));
       if (user && user.username === username && user.password === password) {
         localStorage.setItem('loggedIn', 'true');
