@@ -121,15 +121,14 @@
       color: #ccc;
     }
 
-    input, textarea {
+    input {
       padding: 10px;
       width: 100%;
       margin: 8px 0;
       border-radius: 10px;
       border: none;
       outline: none;
-      resize: none;
-      font-size: 1rem;
+      color: #000;
     }
 
     button {
@@ -140,21 +139,11 @@
       cursor: pointer;
       font-weight: bold;
       transition: 0.3s;
+      color: #000;
     }
 
     button:hover {
       background: #00c3d9;
-    }
-
-    #chat-box {
-      max-height: 300px;
-      overflow-y: auto;
-      background: rgba(255,255,255,0.05);
-      padding: 10px;
-      border-radius: 10px;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      color: #ddd;
     }
 
     footer {
@@ -184,6 +173,16 @@
         text-align: center;
       }
     }
+
+    /* Chat box text style */
+    #chat-box p {
+      margin: 6px 0;
+      padding: 6px 10px;
+      background: rgba(0, 234, 255, 0.2);
+      border-radius: 8px;
+      word-break: break-word;
+    }
+
   </style>
 </head>
 <body>
@@ -228,13 +227,13 @@
       <div class="card" id="auth-card">
         <div id="auth-area">
           <h3>Qeydiyyat</h3>
-          <input type="text" id="reg-username" placeholder="İstifadəçi adı">
-          <input type="password" id="reg-password" placeholder="Şifrə">
+          <input type="text" id="reg-username" placeholder="İstifadəçi adı" autocomplete="off">
+          <input type="password" id="reg-password" placeholder="Şifrə" autocomplete="off">
           <button onclick="register()">Qeydiyyatdan Keç</button>
 
           <h3 style="margin-top:20px;">Giriş</h3>
-          <input type="text" id="login-username" placeholder="İstifadəçi adı">
-          <input type="password" id="login-password" placeholder="Şifrə">
+          <input type="text" id="login-username" placeholder="İstifadəçi adı" autocomplete="off">
+          <input type="password" id="login-password" placeholder="Şifrə" autocomplete="off">
           <button onclick="login()">Giriş Et</button>
         </div>
         <div id="logout-area" style="display:none;">
@@ -246,7 +245,7 @@
 
     <section id="chat">
       <h2>Canlı Chat</h2>
-      <div class="card" id="chat-box">
+      <div class="card" id="chat-box" style="max-height: 300px; overflow-y: auto;">
         <!-- Mesajlar burda görünəcək -->
       </div>
       <div class="card">
@@ -265,46 +264,60 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
   <script>
-    // BURAYA Firebase layihənizin config məlumatlarını yerləşdirin:
+    // Firebase config sənin məlumatlarınla
     const firebaseConfig = {
-      apiKey: "SENIN_API_KEY",
-      authDomain: "SENIN_AUTH_DOMAIN",
-      databaseURL: "SENIN_DATABASE_URL",
-      projectId: "SENIN_PROJECT_ID",
-      storageBucket: "SENIN_STORAGE_BUCKET",
-      messagingSenderId: "SENIN_MESSAGING_SENDER_ID",
-      appId: "SENIN_APP_ID"
+      apiKey: "AIzaSyDtKlqiWYadhhjD5CkfAsjLvisEaGmmGzo",
+      authDomain: "mehelle.firebaseapp.com",
+      databaseURL: "https://mehelle-default-rtdb.firebaseio.com/",
+      projectId: "mehelle",
+      storageBucket: "mehelle.appspot.com",
+      messagingSenderId: "147738380448",
+      appId: "1:147738380448:web:5ff65c69fc4ba3f9a4e1c5"
     };
 
+    // Firebase-ı başlat
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Mesaj göndərmə funksiyası
     function sendMessage() {
-      const msg = document.getElementById("chat-message").value.trim();
+      const msgInput = document.getElementById("chat-message");
+      const msg = msgInput.value.trim();
+      if(msg === "") return alert("Mesaj boş ola bilməz!");
+
+      // İstifadəçi adı yoxdursa "Qonaq" yaz
       const username = localStorage.getItem('currentUser') || "Qonaq";
-      if (msg === "") return;
+
+      // Mesajı Firebase-ə yaz
       db.ref("messages").push({
         user: username,
         text: msg,
         time: Date.now()
+      }).then(() => {
+        msgInput.value = "";
+      }).catch(err => {
+        alert("Mesaj göndərilmədi: " + err.message);
       });
-      document.getElementById("chat-message").value = "";
     }
 
-    // Mesajları dinləyək və ekrana əlavə edək:
+    // Mesajları dinləyib göstərmə
     db.ref("messages").on("value", snapshot => {
       const chatBox = document.getElementById("chat-box");
       chatBox.innerHTML = "";
-      snapshot.forEach(child => {
-        const data = child.val();
+      snapshot.forEach(childSnapshot => {
+        const data = childSnapshot.val();
         const p = document.createElement("p");
-        const time = new Date(data.time).toLocaleTimeString();
-        p.innerHTML = `<strong>${data.user}</strong> [${time}]: ${data.text}`;
+        // Mesaj vaxtını oxunaqlı etmək üçün
+        const date = new Date(data.time);
+        const timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        p.innerHTML = `<strong>${data.user}</strong> [${timeStr}]: ${data.text}`;
         chatBox.appendChild(p);
       });
       chatBox.scrollTop = chatBox.scrollHeight;
     });
 
+    // Qeydiyyat funksiyası (localStorage)
     function register() {
       const username = document.getElementById('reg-username').value.trim();
       const password = document.getElementById('reg-password').value.trim();
@@ -312,15 +325,23 @@
         alert("Zəhmət olmasa bütün sahələri doldurun.");
         return;
       }
-      localStorage.setItem('user', JSON.stringify({ username, password }));
+      // İstifadəçi artıq varsa xəbərdar et
+      let users = JSON.parse(localStorage.getItem('users') || "{}");
+      if(users[username]) {
+        alert("Bu istifadəçi adı artıq mövcuddur.");
+        return;
+      }
+      users[username] = password;
+      localStorage.setItem('users', JSON.stringify(users));
       alert("Qeydiyyat uğurla tamamlandı!");
     }
 
+    // Giriş funksiyası
     function login() {
       const username = document.getElementById('login-username').value.trim();
       const password = document.getElementById('login-password').value.trim();
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (user && user.username === username && user.password === password) {
+      let users = JSON.parse(localStorage.getItem('users') || "{}");
+      if(users[username] && users[username] === password) {
         localStorage.setItem('loggedIn', 'true');
         localStorage.setItem('currentUser', username);
         updateAuthUI();
@@ -329,12 +350,14 @@
       }
     }
 
+    // Çıxış funksiyası
     function logout() {
       localStorage.removeItem('loggedIn');
       localStorage.removeItem('currentUser');
       updateAuthUI();
     }
 
+    // UI yeniləmə funksiyası
     function updateAuthUI() {
       const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
       const username = localStorage.getItem('currentUser');
