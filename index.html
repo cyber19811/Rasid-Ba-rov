@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rasid Bağırov - Məhəllə Saytı22</title>
+  <title>Rasid Bağırov - Məhəllə Saytı</title>
   <style>
     :root {
       --primary: #00eaff;
@@ -121,6 +121,29 @@
       color: #ccc;
     }
 
+    input {
+      padding: 10px;
+      width: 100%;
+      margin: 8px 0;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: var(--primary);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #00c3d9;
+    }
+
     footer {
       text-align: center;
       padding: 30px;
@@ -154,22 +177,19 @@
 
   <header>
     <h1>Rasid Bağırov</h1>
-    <p>Məhəllə üçün rəsmi xəbər və elan platforması</p>
+    <p id="user-greeting">Məhəllə üçün rəsmi xəbər və elan platforması</p>
   </header>
 
   <nav>
     <a href="#xeberler"> Məhəllə Xəbərləri</a>
     <a href="#elanlar"> Elanlar</a>
     <a href="#elaqe"> Əlaqə</a>
+    <a href="#hesab"> Hesab</a>
   </nav>
 
   <main>
     <section id="xeberler">
       <h2>Məhəllə Xəbərləri</h2>
-      <div class="card">
-        <h3></h3>
-        <p></p>
-      </div>
       <div class="card">
         <h3>Toplantı Çağırışı</h3>
         <p></p>
@@ -179,25 +199,85 @@
     <section id="elanlar">
       <h2>Elanlar</h2>
       <div class="card">
-        <h3Xəbər yoxdur1</h3>
-        <p></p>
-      </div>
-      <div class="card">
-        <h3>Xəbər Yoxdur</h3>
-        <h3>Xəbər Yoxdur</h3>
+        <h3>Xəbər yoxdur</h3>
         <p></p>
       </div>
     </section>
 
     <section id="elaqe">
       <h2>Əlaqə</h2>
-      <p>Bizə yazmaq üçün: <a href="mailto:mehhelle@example.com">samsgoog28@gmail.com</a></p>
+      <p>Bizə yazmaq üçün: <a href="mailto:samsgoog28@gmail.com">samsgoog28@gmail.com</a></p>
+    </section>
+
+    <section id="hesab">
+      <h2>Hesab</h2>
+      <div class="card" id="auth-card">
+        <div id="auth-area">
+          <h3>Qeydiyyat</h3>
+          <input type="text" id="reg-username" placeholder="İstifadəçi adı">
+          <input type="password" id="reg-password" placeholder="Şifrə">
+          <button onclick="register()">Qeydiyyatdan Keç</button>
+
+          <h3 style="margin-top:20px;">Giriş</h3>
+          <input type="text" id="login-username" placeholder="İstifadəçi adı">
+          <input type="password" id="login-password" placeholder="Şifrə">
+          <button onclick="login()">Giriş Et</button>
+        </div>
+        <div id="logout-area" style="display:none;">
+          <p><strong id="welcome-name"></strong> xoş gəldin!</p>
+          <button onclick="logout()">Çıxış</button>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
-    © 2025 Rasid Bağırov Məhəlləsi. 
+    © 2025 Rasid Bağırov Məhəlləsi.
   </footer>
+
+  <script>
+    function register() {
+      const username = document.getElementById('reg-username').value;
+      const password = document.getElementById('reg-password').value;
+      if (!username || !password) {
+        alert("Zəhmət olmasa bütün sahələri doldurun.");
+        return;
+      }
+      localStorage.setItem('user', JSON.stringify({ username, password }));
+      alert("Qeydiyyat uğurla tamamlandı!");
+    }
+
+    function login() {
+      const username = document.getElementById('login-username').value;
+      const password = document.getElementById('login-password').value;
+      const user = JSON.parse(localStorage.getItem('user'));
+      if (user && user.username === username && user.password === password) {
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('currentUser', username);
+        updateAuthUI();
+      } else {
+        alert("İstifadəçi adı və ya şifrə yanlışdır.");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('currentUser');
+      updateAuthUI();
+    }
+
+    function updateAuthUI() {
+      const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
+      const username = localStorage.getItem('currentUser');
+      document.getElementById('auth-area').style.display = isLoggedIn ? 'none' : 'block';
+      document.getElementById('logout-area').style.display = isLoggedIn ? 'block' : 'none';
+      document.getElementById('welcome-name').innerText = username || '';
+      document.getElementById('user-greeting').innerText = isLoggedIn ? `Xoş gəldin, ${username}!` : "Məhəllə üçün rəsmi xəbər və elan platforması";
+    }
+
+    // Sayfa açıldığında giriş durumunu yoxla
+    window.onload = updateAuthUI;
+  </script>
 
 </body>
 </html>
